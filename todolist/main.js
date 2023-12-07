@@ -1,160 +1,67 @@
-let listEle = document.querySelector("#items");
+const form = document.getElementById('addForm');
 
-let formEle = document.querySelector("form");
+const taskList = document.getElementById('items');
 
-let searchEle = document.querySelector('#filter');
+// console.log(form);
 
-const themeBtn = document.querySelector(".dropdown");
-// -----------------------------------nav - toggle
-const toggleBtn = document.querySelector("#menu-icon");
-const header = document.querySelector(".header");
-const hero = document.querySelector(".hero");
+// adding task in totdo - list
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    // console.log(e.target.children[0].value);
+    var task = e.target.children[0].value;
 
-toggleBtn.addEventListener("click", () => {
-    if (themeBtn.classList.contains("side-bar")) {
-        header.classList.remove("temp-header");
-        hero.classList.add("temp-hero");
-        themeBtn.classList.remove("side-bar");
-        searchEle.classList.remove("side-bar");
-    } else {
-        header.classList.add("temp-header");
-        hero.classList.remove("temp-hero");
-        themeBtn.classList.add("side-bar");
-        searchEle.classList.add("side-bar");
-    }
+    var li = document.createElement('li');
+    li.classList.add("list-group-item");
+    li.innerText = task;
 
+    const btn = document.createElement('button')
+    btn.setAttribute('class', 'btn list-btn btn-sm float-right delete');
+    btn.innerText = 'X';
+    li.append(btn);
+    taskList.append(li);
+    e.target.children[0].value = '';
 })
 
-//------------------------- Add tasks -------------------------//
-formEle.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (e.target[0].value === "") {
-        alert("Item name must not be empty");
-    } else {
-        let newLi = document.createElement("li");
-        newLi.className = "list-group-item";
-        newLi.append(document.createTextNode(e.target[0].value));
-        let btn = document.createElement("button");
-        btn.append("X");
-        btn.className = "btn list-btn btn-sm float-right delete";
-        newLi.append(btn);
-        listEle.append(newLi);
+// Delete task
+const delteEle = document.getElementById('items');
+
+delteEle.addEventListener('click', (e) => {
+    // console.log(e.target);
+    if (e.target.classList.contains('delete')) {
+        e.target.parentElement.remove();
     }
-    e.target[0].value = "";
+})
 
-});
+// Search Filter
+const filter = document.getElementById('filter');
 
-//------------------------- Delete Tasks -------------------------//
+const listItem = document.getElementsByClassName('list-group-item');
 
-listEle.addEventListener("click", (e) => {
-    if (e.target.classList.contains("list-btn")) {
-        if (confirm("Delete item ?")) {
-            listEle.removeChild(e.target.parentElement);
-        }
-    }
-});
+filter.addEventListener('keyup', (e) => {
+    // console.log(e.target.value);
 
-//------------------------- Search Filters -------------------------//
-searchEle.addEventListener("keyup", (e) => {
-    let text = e.target.value.toLowerCase();
-
-    let items = document.querySelectorAll("li");
-
-    Array.from(items).forEach((item) => {
-        let searchText = item.childNodes[0].textContent.toLowerCase();
-        if (searchText.indexOf(text) != -1) {
-            item.style.display = "block";
+    for (let i = 0; i < listItem.length; i++) {
+        if (listItem[i].innerText.toLowerCase().includes(e.target.value)) {
+            listItem[i].style.display = 'block';
         } else {
-            item.style.display = "none";
+            listItem[i].style.display = 'none';
         }
-    });
-});
+    }
+})
 
-// --------------------------------- Theme selector
-const body = document.querySelector("body");
+// Themes
+const theme = document.getElementById('theme');
+const body = document.getElementsByTagName('body')[0];
 
-function reClass() {
+theme.addEventListener('click', (e) => {
+    var color = e.target.getAttribute('id');
+
+    removeClass();
+    body.classList.add(color);
+})
+
+function removeClass() {
     for (let i = 0; i < body.classList.length; i++) {
         body.classList.remove(body.classList[i]);
     }
 }
-
-const theme = document.querySelector("#theme").children;
-
-function removeactive() {
-    for (let li = 0; li < 4; li++) {
-        theme[li].classList.remove("active");
-    }
-}
-
-
-for (let li = 0; li < 4; li++) {
-    theme[li].addEventListener("click", (e) => {
-        reClass();
-        body.classList.add(e.target.id);
-        removeactive();
-        theme[li].classList.add("active");
-    })
-}
-
-// -------------------------------- Drag Drop
-
-const listItems = document.querySelectorAll("#items .list-group-item");
-
-let dragSrcElement = null;
-
-function dragStart(e) {
-
-    dragSrcElement = this
-
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/html", this.innerHTML)
-}
-
-function dragEnter() {
-
-    // console.log("dragEnter")
-}
-
-
-function dragOver(e) {
-
-    e.preventDefault();
-
-    e.dataTransfer.dropEffect = "move";
-    // console.log("dragOver")
-
-}
-
-function dragLeave() {
-
-    // console.log("dragLeave")
-}
-
-
-function handleDrop(e) {
-
-    if (dragSrcElement !== this) {
-
-        dragSrcElement.innerHTML = this.innerHTML;
-
-        this.innerHTML = e.dataTransfer.getData("text/html");
-    }
-
-
-    // console.log("drop")
-}
-
-listItems.forEach((item) => {
-
-    item.addEventListener("dragstart", dragStart)
-
-    item.addEventListener("dragenter", dragEnter)
-
-    item.addEventListener("dragover", dragOver)
-
-    item.addEventListener("dragleave", dragLeave)
-
-    item.addEventListener("drop", handleDrop)
-
-})

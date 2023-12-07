@@ -9,6 +9,14 @@ body {
     flex-direction: column;
 }
 
+.display {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
 .header {
     width: 100vw;
     background-color: var(--bg-color);
